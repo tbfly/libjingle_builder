@@ -1,0 +1,89 @@
+Index: libjingle.scons
+===================================================================
+--- libjingle.scons	(revision 177)
++++ libjingle.scons	(working copy)
+@@ -12,6 +12,7 @@
+              ],
+              includedirs = [
+                "third_party/expat-2.0.1/lib",
++               "third_party/expat-2.0.1/",
+              ],
+              win_cppdefines = [
+                "COMPILED_FROM_DSP",
+@@ -112,6 +113,8 @@
+                "base/macsocketserver.cc",
+                "base/macutils.cc",
+                "base/macwindowpicker.cc",
++               "base/maccocoasocketserver.mm",
++               "base/maccocoathreadhelper.mm",
+                "base/scoped_autorelease_pool.mm",
+                "media/devices/carbonvideorenderer.cc",
+                "media/devices/macdevicemanager.cc",
+@@ -457,6 +460,25 @@
+            "xmpphelp",
+          ],
+ )
++talk.App(env, name = "pcp",
++     posix_libs = [
++       "crypto",
++       "ssl",
++     ],
++     includedirs = [
++       "third_party/gtest/include",
++       "third_party/gtest",
++     ],
++     srcs = [
++       "examples/pcp/pcp_main.cc",
++     ],
++     libs = [
++       "jingle",
++       "expat",
++       "srtp",
++       "xmpphelp",
++     ],
++)
+ talk.App(env, name = "relayserver",
+          libs = [
+            "jingle",
+Index: main.scons
+===================================================================
+--- main.scons	(revision 177)
++++ main.scons	(working copy)
+@@ -369,7 +369,7 @@
+   CXXFLAGS = [
+     '-Wno-non-virtual-dtor',
+     '-Wno-ctor-dtor-privacy',
+-    '-fno-rtti',
++    #'-fno-rtti',
+   ],
+ )
+ 
+@@ -477,12 +477,12 @@
+       CCFLAGS = [
+         '-mmacosx-version-min=' + ver,
+         '-isysroot',
+-        '/Developer/SDKs/MacOSX' + ver + '.sdk'
++        '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX' + ver + '.sdk'
+       ],
+       LINKFLAGS = [
+         '-mmacosx-version-min=' + ver,
+         '-isysroot',
+-        '/Developer/SDKs/MacOSX' + ver + '.sdk'
++        '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX' + ver + '.sdk'
+       ],
+     )
+ 
+Index: base/gunit_prod.h
+===================================================================
+--- base/gunit_prod.h	(revision 177)
++++ base/gunit_prod.h	(working copy)
+@@ -31,7 +31,8 @@
+ #if defined(ANDROID) || defined (GTEST_RELATIVE_PATH)
+ #include "gtest/gtest_prod.h"
+ #else
+-#include "testing/base/gunit_prod.h"
++//#include "testing/base/gunit_prod.h"
++#include "gtest/gtest_prod.h"
+ #endif
+ 
+ #endif  // TALK_BASE_GUNIT_PROD_H_
